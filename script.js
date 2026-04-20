@@ -22,3 +22,42 @@ function resetGame() {
         location.reload(); // Refresh the page to start over
     }
 }
+// ==========================================
+// KARMA HASH SYSTEM (PORTABLE SAVES)
+// ==========================================
+
+function exportKarma() {
+    // Convert player object to string, then encode it to Base64
+    const hash = btoa(JSON.stringify(player));
+    
+    // Prompt the user to copy the hash
+    const tempInput = document.createElement("input");
+    document.body.appendChild(tempInput);
+    tempInput.value = hash;
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    
+    alert("Your Karma Hash has been copied to your clipboard! Save this code to resume your journey on any device.");
+}
+
+function importKarma() {
+    const hash = prompt("Paste your Karma Hash here to synchronize your soul:");
+    if (hash) {
+        try {
+            // Decode the Base64 string and turn it back into an object
+            const decodedData = JSON.parse(atob(hash));
+            
+            if (decodedData && decodedData.isAwake) {
+                player = decodedData;
+                saveGame(); // Save to localStorage so it persists here too
+                writeLog("Karma synchronization complete. Your soul has successfully migrated.", "breakthrough-msg");
+                updateUI();
+            } else {
+                alert("The Karma Hash appears to be corrupted.");
+            }
+        } catch (e) {
+            alert("Invalid Karma Hash. The heavens cannot recognize this soul.");
+        }
+    }
+}
