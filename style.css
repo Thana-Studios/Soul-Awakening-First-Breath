@@ -1,13 +1,12 @@
 :root {
     --gold: #c5a059;
-    --gold-glow: rgba(197, 160, 89, 0.3);
     --qi-cyan: #00ffcc;
     --karma-red: #ff4d4d;
     --bg-black: #050505;
     --border: rgba(255, 255, 255, 0.05);
 }
 
-* { box-sizing: border-box; transition: all 0.3s ease; }
+* { box-sizing: border-box; }
 
 body {
     background-color: #000;
@@ -25,7 +24,6 @@ body {
     height: 100vh;
 }
 
-/* Sidebar */
 #status-panel {
     grid-row: 1 / span 2;
     background: var(--bg-black);
@@ -36,33 +34,23 @@ body {
 }
 
 .brand-header { margin-bottom: 50px; }
-.studio-name { font-size: 0.6rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; display: block; }
+.studio-name { font-size: 0.6rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
 .game-title { font-family: 'Cinzel', serif; margin: 0; font-size: 1.4rem; }
 
 .stat-group { margin-bottom: 35px; }
 .stat-group label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: #555; }
 .value { font-family: 'Cinzel', serif; font-size: 1.2rem; margin-top: 5px; }
-.gold-text { color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
+.gold-text { color: var(--gold); text-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
 
 .bar-bg { width: 100%; height: 2px; background: #111; margin-top: 10px; }
-.bar-fill { height: 100%; background: var(--qi-cyan); width: 0%; box-shadow: 0 0 10px var(--qi-cyan); }
-.bar-fill.age { background: #333; box-shadow: none; }
+.bar-fill { height: 100%; background: var(--qi-cyan); width: 0%; box-shadow: 0 0 10px var(--qi-cyan); transition: width 0.5s ease; }
+.bar-fill.age { background: #333; box-shadow: none; transition: width 1s linear; }
 
-.menu-trigger-btn {
-    background: transparent;
-    border: 1px solid #222;
-    color: #555;
-    padding: 10px;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    margin-top: 20px;
-}
+.timer-display { font-size: 0.55rem; color: #444; margin-top: 8px; letter-spacing: 1px; font-weight: 900; }
 
-.menu-trigger-btn:hover { border-color: var(--gold); color: var(--gold); }
+@keyframes dangerPulse { 0% { background: #333; } 50% { background: var(--karma-red); } 100% { background: #333; } }
+.low-life { animation: dangerPulse 2s infinite; }
 
-/* Chronicle */
 #log-container {
     padding: 60px;
     overflow-y: auto;
@@ -72,12 +60,9 @@ body {
     gap: 15px;
 }
 
-.log-entry { font-size: 1rem; color: #888; line-height: 1.6; max-width: 750px; animation: slideIn 0.4s ease-out; }
+.log-entry { font-size: 1rem; color: #888; line-height: 1.6; max-width: 750px; }
 .log-entry.system { color: var(--gold); font-weight: bold; }
 
-@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-/* Actions */
 #action-bar {
     background: var(--bg-black);
     border-top: 1px solid var(--border);
@@ -100,9 +85,7 @@ body {
 
 .action-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
 .breakthrough { border-color: var(--gold); color: var(--gold); font-weight: 900; }
-.breakthrough:hover:not(:disabled) { background: var(--gold); color: #000; }
 
-/* Side Menu */
 #side-menu {
     position: fixed;
     top: 0; right: -400px;
@@ -111,6 +94,7 @@ body {
     border-left: 1px solid var(--gold);
     z-index: 1000;
     padding: 60px 40px;
+    transition: right 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 #menu-overlay {
@@ -120,14 +104,12 @@ body {
     background: rgba(0,0,0,0.8);
     display: none;
     z-index: 999;
-    backdrop-filter: blur(4px);
 }
 
+.menu-trigger-btn { background: transparent; border: 1px solid #222; color: #444; font-size: 0.6rem; padding: 10px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; }
 .menu-title { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.8rem; margin: 0; }
-.menu-sub { font-size: 0.6rem; letter-spacing: 3px; color: #444; text-transform: uppercase; margin-bottom: 40px; }
-.stat-list { list-style: none; padding: 0; color: #888; font-size: 0.9rem; }
+.stat-list { list-style: none; padding: 0; color: #888; font-size: 0.9rem; margin-top: 30px; }
 .stat-list li { margin-bottom: 12px; border-bottom: 1px solid #111; padding-bottom: 5px; }
 
-.footer-links { margin-top: auto; }
-.util-btn { background: none; border: none; color: #333; font-size: 0.6rem; cursor: pointer; text-transform: uppercase; padding: 0; text-align: left; }
+.util-btn { background: none; border: none; color: #333; font-size: 0.6rem; cursor: pointer; text-transform: uppercase; }
 .back-link { display: block; margin-top: 10px; color: #333; text-decoration: none; font-size: 0.6rem; text-transform: uppercase; }

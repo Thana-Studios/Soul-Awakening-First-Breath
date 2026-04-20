@@ -13,22 +13,9 @@
     <aside id="side-menu">
         <div class="menu-inner">
             <h3 class="menu-title">The Inner Eye</h3>
-            <p class="menu-sub">Soul Archives & Statistics</p>
-            
-            <div class="menu-section">
-                <h4>Cultivator Essence</h4>
-                <ul id="extra-stats" class="stat-list">
-                    </ul>
-            </div>
-
-            <div class="menu-section">
-                <h4>Karma Records</h4>
-                <div id="achievement-list">
-                    <div class="achievement-locked">Heavenly Tribulation Survivor (Locked)</div>
-                </div>
-            </div>
-
-            <button class="util-btn" onclick="toggleMenu()" style="margin-top: 40px; border: 1px solid #222; padding: 10px;">Close Archive</button>
+            <p class="menu-sub">Soul Statistics</p>
+            <ul id="extra-stats" class="stat-list"></ul>
+            <button class="util-btn" onclick="toggleMenu()" style="margin-top: 40px;">Close Archive</button>
         </div>
     </aside>
 
@@ -59,10 +46,11 @@
                         <span id="age-count">16 / 80 Years</span>
                     </div>
                     <div class="bar-bg"><div id="age-fill" class="bar-fill age"></div></div>
+                    <div id="time-countdown" class="timer-display">Next Year In: 5:00</div>
                 </div>
             </div>
 
-            <button class="menu-trigger-btn" onclick="toggleMenu()">View Inner Eye</button>
+            <button class="menu-trigger-btn" onclick="toggleMenu()">Expand Inner Eye</button>
 
             <div class="footer-links">
                 <button class="util-btn" onclick="location.reload()">Reincarnate</button>
@@ -71,12 +59,12 @@
         </aside>
 
         <main id="log-container">
-            <div class="log-entry system">Your soul stirs in the void. The path of ascension lies before you.</div>
+            <div class="log-entry system">The clock of the heavens has begun to tick. Cultivate before your time expires.</div>
         </main>
 
         <nav id="action-bar">
-            <button class="action-btn" onclick="meditate()">Meditate (1 Year)</button>
-            <button class="action-btn" onclick="explore()">Explore (2 Years)</button>
+            <button class="action-btn" onclick="meditate()">Meditate</button>
+            <button class="action-btn" onclick="explore()">Explore</button>
             <button class="action-btn breakthrough" onclick="breakthrough()">Attempt Breakthrough</button>
         </nav>
     </div>
