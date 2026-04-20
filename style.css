@@ -1,0 +1,120 @@
+/* Brand Variables */
+:root {
+    --bg-color: #050505;
+    --panel-bg: #111111;
+    --border-color: #2a2a2a;
+    --gold: #c5a059;
+    --cyan: #00ffcc;
+    --text-main: #e0e0e0;
+    --text-dim: #888;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Georgia', serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Status Top Bar */
+#status-panel {
+    background: var(--panel-bg);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.stat {
+    font-weight: bold;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+
+/* Log / Story Area */
+#log-container {
+    flex-grow: 1;
+    background: #000;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#log {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.log-entry {
+    line-height: 1.6;
+    padding-left: 10px;
+    border-left: 1px solid var(--border-color);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-5px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Control Buttons */
+#controls {
+    padding: 20px 0;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+button {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid var(--border-color);
+    padding: 12px 25px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+button:hover {
+    border-color: var(--gold);
+    background: #222;
+    box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+}
+
+/* Utility / Footer */
+#footer-controls {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.util-btn {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    opacity: 0.6;
+}
+
+.util-btn.reset:hover {
+    border-color: #f44;
+    color: #f44;
+}
+
+/* Message Coloring */
+.event-msg { color: var(--cyan); }
+.breakthrough-msg { color: var(--gold); font-weight: bold; }
+.system-msg { color: var(--text-dim); font-style: italic; }
