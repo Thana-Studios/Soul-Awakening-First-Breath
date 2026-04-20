@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Soul Awakening: First Breath | Thana Studios</title>
+    <style>
+        /* Keeping your sleek dark theme */
+        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Georgia', serif; display: flex; flex-direction: column; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        #status-panel { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; display: flex; justify-content: space-around; font-size: 0.9rem; }
+        .stat { font-weight: bold; color: #ffd700; }
+        #log { flex-grow: 1; background: #050505; padding: 20px; border-radius: 8px; border: 1px solid #222; overflow-y: auto; margin-bottom: 20px; line-height: 1.8; }
+        .log-entry { margin-bottom: 12px; padding-left: 15px; border-left: 2px solid #333; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .event-msg { color: #00ffcc; } /* For Exploration */
+        .breakthrough-msg { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px rgba(255,215,0,0.5); }
+        #controls { display: flex; gap: 15px; justify-content: center; padding: 10px; }
+        button { padding: 12px 24px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        button:hover { border-color: #ffd700; background: #222; }
+        button:disabled { display: none; }
+        .root-highlight { color: #00ffcc; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="status-panel">
+        <div>Root: <span id="p-root" class="stat">Unknown</span></div>
+        <div>Realm: <span id="p-realm" class="stat">Mortal</span></div>
+        <div>Qi: <span id="p-qi" class="stat">0</span></div>
+    </div>
+
+    <div id="log">
+        <div class="log-entry">The darkness fades. You feel a sudden warmth as your soul anchors itself to a new vessel...</div>
+    </div>
+
+    <div id="controls">
+        <button id="btn-awaken" onclick="awaken()">Awaken Soul</button>
+        
+        <button id="btn-cultivate" onclick="cultivate()" style="display:none;">Meditate 🧘</button>
+        <button id="btn-explore" onclick="explore()" style="display:none;">Explore 🌿</button>
+        <button id="btn-breakthrough" onclick="breakthrough()" style="display:none;">Breakthrough ✨</button>
+    </div>
+
+    <script>
+        const realms = [
+            { name: "Mortal", req: 20, chance: 1.0 },
+            { name: "Qi Condensation", req: 100, chance: 0.7 },
+            { name: "Foundation Establishment", req: 500, chance: 0.5 }
+        ];
+
+        const spiritRoots = [
+            { name: "Mortal Root", multi: 1.0, color: "#aaa" },
+            { name: "Earth Root", multi: 2.0, color: "#8b4513" },
+            { name: "Heavenly Root", multi: 5.0, color: "#ffd700" },
+            { name: "Primordial Root", multi: 12.0, color: "#00ffcc" }
+        ];
+
+        let player = {
+            root: null,
+            realmIndex: 0,
+            qi: 0,
+            isAwake: false
+        };
+
+        function writeLog(text, className = "") {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = "log-entry " + className;
+            entry.innerHTML = text; // Using innerHTML to allow colored spans
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateUI() {
+            if(player.root) {
+                document.getElementById('p-root').innerText = player.root.name;
+                document.getElementById('p-root').style.color = player.root.color;
+            }
+            document.getElementById('p-realm').innerText = realms[player.realmIndex].name;
+            document.getElementById('p-qi').innerText = Math.floor(player.qi);
+
+            // Toggle Buttons
+            document.getElementById('btn-awaken').style.display = player.isAwake ? "none" : "inline-block";
+            document.getElementById('btn-cultivate').style.display = player.isAwake ? "inline-block" : "none";
+            document.getElementById('btn-explore').style.display = player.isAwake ? "inline-block" : "none";
+            
+            const currentRealm = realms[player.realmIndex];
+            document.getElementById('btn-breakthrough').style.display = (player.qi >= currentRealm.req && player.realmIndex < realms.length - 1) ? "inline-block" : "none";
+        }
+
+        function awaken() {
+            // Randomly roll for a Spirit Root
+            const roll = Math.random();
+            if (roll > 0.98) player.root = spiritRoots[3]; // 2% chance
+            else if (roll > 0.85) player.root = spiritRoots[2]; // 13% chance
+            else if (roll > 0.50) player.root = spiritRoots[1]; // 35% chance
+            else player.root = spiritRoots[0]; // 50% chance
+
+            player.isAwake = true;
+            writeLog(`Your eyes snap open. You have been born with a <span class="root-highlight" style="color:${player.root.color}">${player.root.name}</span>.`);
+            writeLog("The journey to immortality begins now.");
+            updateUI();
+        }
+
+        function cultivate() {
+            let gain = 2 * player.root.multi;
+            player.qi += gain;
+            writeLog(`You draw the surrounding Qi into your meridians. (+${gain} Qi)`);
+            updateUI();
+        }
+
+        function explore() {
+            const events = [
+                { msg: "You find a quiet stream. The peacefulness clears your mind.", qi: 5 },
+                { msg: "You discover a Spirit Herb growing in the shade!", qi: 20 },
+                { msg: "A minor beast startles you. You burn some Qi to escape.", qi: -10 },
+                { msg: "You sit atop a jagged cliff and watch the clouds roll by.", qi: 5 }
+            ];
+            const event = events[Math.floor(Math.random() * events.length)];
+            player.qi += event.qi;
+            if (player.qi < 0) player.qi = 0;
+            writeLog(event.msg + ` (${event.qi > 0 ? '+' : ''}${event.qi} Qi)`, "event-msg");
+            updateUI();
+        }
+
+        function breakthrough() {
+            const currentRealm = realms[player.realmIndex];
+            if (Math.random() <= currentRealm.chance) {
+                player.realmIndex++;
+                player.qi = 0;
+                writeLog(`The heavens tremble! You have ascended to the **${realms[player.realmIndex].name}** realm!`, "breakthrough-msg");
+            } else {
+                player.qi = Math.floor(player.qi * 0.5);
+                writeLog("The breakthrough fails! Your Qi dissipates and your meridians ache.", "system-msg");
+            }
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
