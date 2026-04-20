@@ -1,17 +1,16 @@
-/* Brand Variables */
 :root {
-    --bg-color: #050505;
-    --panel-bg: #111111;
-    --border-color: #2a2a2a;
+    --bg: #030303;
+    --panel: #0d0d0d;
+    --border: #1f1f1f;
     --gold: #c5a059;
     --cyan: #00ffcc;
-    --text-main: #e0e0e0;
-    --text-dim: #888;
+    --text: #d1d1d1;
+    --dim: #555;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Georgia', serif;
     margin: 0;
     padding: 20px;
@@ -19,32 +18,25 @@ body {
     flex-direction: column;
     height: 100vh;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
-/* Status Top Bar */
 #status-panel {
-    background: var(--panel-bg);
+    background: var(--panel);
     padding: 15px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    border-radius: 2px;
 }
 
-.stat {
-    font-weight: bold;
-    color: var(--gold);
-    text-transform: uppercase;
-}
+.stat { color: var(--gold); font-weight: bold; text-transform: uppercase; }
 
-/* Log / Story Area */
 #log-container {
     flex-grow: 1;
     background: #000;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border: 1px solid var(--border);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -55,66 +47,63 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .log-entry {
     line-height: 1.6;
-    padding-left: 10px;
-    border-left: 1px solid var(--border-color);
-    animation: slideIn 0.3s ease-out;
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+    animation: fadeIn 0.4s ease;
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(-5px); }
-    to { opacity: 1; transform: translateX(0); }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Control Buttons */
 #controls {
     padding: 20px 0;
     display: flex;
-    gap: 15px;
+    gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 button {
-    background: #1a1a1a;
-    color: white;
-    border: 1px solid var(--border-color);
-    padding: 12px 25px;
-    border-radius: 2px;
+    background: #111;
+    color: #fff;
+    border: 1px solid var(--border);
+    padding: 12px 20px;
     cursor: pointer;
-    font-family: inherit;
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: all 0.2s;
+    transition: 0.2s;
 }
 
-button:hover {
-    border-color: var(--gold);
-    background: #222;
-    box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+button:hover { border-color: var(--gold); background: #1a1a1a; }
+
+#karma-portal {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding: 15px;
+    margin-top: 10px;
 }
 
-/* Utility / Footer */
-#footer-controls {
-    text-align: center;
-    padding-top: 10px;
-}
-
-.util-btn {
+.portal-header {
     font-size: 0.7rem;
-    padding: 5px 10px;
-    opacity: 0.6;
+    color: var(--dim);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
 }
 
-.util-btn.reset:hover {
-    border-color: #f44;
-    color: #f44;
-}
+.portal-buttons { display: flex; justify-content: center; gap: 10px; }
 
-/* Message Coloring */
+.util-btn { font-size: 0.65rem; padding: 5px 10px; opacity: 0.7; }
+.util-btn.reset:hover { border-color: #700; color: #f44; }
+
 .event-msg { color: var(--cyan); }
 .breakthrough-msg { color: var(--gold); font-weight: bold; }
-.system-msg { color: var(--text-dim); font-style: italic; }
+.system-msg { color: var(--dim); font-style: italic; }
