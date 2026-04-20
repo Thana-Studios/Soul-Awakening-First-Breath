@@ -16,21 +16,24 @@
 
     <div id="log-container">
         <div id="log">
-            <div class="log-entry">The darkness fades. You feel a sudden warmth as your soul anchors itself to a new vessel...</div>
+            <div class="log-entry system-msg">The darkness fades. Your soul anchors to a new vessel.</div>
         </div>
     </div>
 
     <div id="controls">
         <button id="btn-awaken" onclick="awaken()">Awaken Soul</button>
-        
         <button id="btn-cultivate" onclick="cultivate()" style="display:none;">Meditate</button>
         <button id="btn-explore" onclick="explore()" style="display:none;">Explore</button>
-        <button id="btn-breakthrough" onclick="breakthrough()" style="display:none;">Breakthrough</button>
+        <button id="btn-breakthrough" onclick="breakthrough()" style="display:none;">Attempt Breakthrough</button>
     </div>
 
-    <div id="footer-controls">
-        <button class="util-btn" onclick="saveGame()">Manual Save</button>
-        <button class="util-btn reset" onclick="resetGame()">Reset Karma</button>
+    <div id="karma-portal">
+        <div class="portal-header">Karma Management</div>
+        <div class="portal-buttons">
+            <button class="util-btn" onclick="exportKarma()">Export Hash</button>
+            <button class="util-btn" onclick="importKarma()">Import Hash</button>
+            <button class="util-btn reset" onclick="resetGame()">Reset Karma</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
