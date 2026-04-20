@@ -3,37 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soul Awakening: First Breath</title>
+    <title>Soul Awakening | First Breath</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="menu-overlay" onclick="toggleMenu()"></div>
 
-    <div id="status-panel">
-        <div class="stat-box">Root: <span id="p-root" class="stat">Unknown</span></div>
-        <div class="stat-box">Realm: <span id="p-realm" class="stat">Mortal</span></div>
-        <div class="stat-box">Qi: <span id="p-qi" class="stat">0</span></div>
-    </div>
+    <aside id="side-menu">
+        <div class="menu-inner">
+            <h3 class="menu-title">The Inner Eye</h3>
+            <p class="menu-sub">Soul Archives & Statistics</p>
+            
+            <div class="menu-section">
+                <h4>Cultivator Essence</h4>
+                <ul id="extra-stats" class="stat-list">
+                    </ul>
+            </div>
 
-    <div id="log-container">
-        <div id="log">
-            <div class="log-entry system-msg">Initializing Soul Vessel...</div>
+            <div class="menu-section">
+                <h4>Karma Records</h4>
+                <div id="achievement-list">
+                    <div class="achievement-locked">Heavenly Tribulation Survivor (Locked)</div>
+                </div>
+            </div>
+
+            <button class="util-btn" onclick="toggleMenu()" style="margin-top: 40px; border: 1px solid #222; padding: 10px;">Close Archive</button>
         </div>
-    </div>
+    </aside>
 
-    <div id="controls">
-        <button id="btn-awaken" onclick="awaken()">Awaken Soul</button>
-        <button id="btn-cultivate" onclick="cultivate()" style="display:none;">Meditate</button>
-        <button id="btn-explore" onclick="explore()" style="display:none;">Explore</button>
-        <button id="btn-breakthrough" onclick="breakthrough()" style="display:none;">Breakthrough</button>
-    </div>
+    <div id="game-container">
+        <aside id="status-panel">
+            <div class="brand-header">
+                <span class="studio-name">Thana Studios</span>
+                <h2 class="game-title">Soul Awakening</h2>
+            </div>
 
-    <div id="karma-portal">
-        <div class="portal-header">Karma Management</div>
-        <div class="portal-buttons">
-            <button class="util-btn" onclick="exportKarma()">Export Hash</button>
-            <button class="util-btn" onclick="importKarma()">Import Hash</button>
-            <button class="util-btn reset" onclick="resetGame()">Reset Karma</button>
-        </div>
+            <div class="stat-group">
+                <label>Current Realm</label>
+                <div id="realm-display" class="value gold-text">Mortal Coil</div>
+            </div>
+
+            <div class="gauges">
+                <div class="stat-group">
+                    <div class="label-row">
+                        <label>Qi Concentration</label>
+                        <span id="qi-count">0 / 100</span>
+                    </div>
+                    <div class="bar-bg"><div id="qi-fill" class="bar-fill"></div></div>
+                </div>
+
+                <div class="stat-group">
+                    <div class="label-row">
+                        <label>Natural Lifespan</label>
+                        <span id="age-count">16 / 80 Years</span>
+                    </div>
+                    <div class="bar-bg"><div id="age-fill" class="bar-fill age"></div></div>
+                </div>
+            </div>
+
+            <button class="menu-trigger-btn" onclick="toggleMenu()">View Inner Eye</button>
+
+            <div class="footer-links">
+                <button class="util-btn" onclick="location.reload()">Reincarnate</button>
+                <a href="https://thana-studios.github.io/" class="back-link">Return to Studio</a>
+            </div>
+        </aside>
+
+        <main id="log-container">
+            <div class="log-entry system">Your soul stirs in the void. The path of ascension lies before you.</div>
+        </main>
+
+        <nav id="action-bar">
+            <button class="action-btn" onclick="meditate()">Meditate (1 Year)</button>
+            <button class="action-btn" onclick="explore()">Explore (2 Years)</button>
+            <button class="action-btn breakthrough" onclick="breakthrough()">Attempt Breakthrough</button>
+        </nav>
     </div>
 
     <script src="script.js"></script>

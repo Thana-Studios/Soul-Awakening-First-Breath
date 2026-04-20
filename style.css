@@ -1,109 +1,133 @@
 :root {
-    --bg: #030303;
-    --panel: #0d0d0d;
-    --border: #1f1f1f;
     --gold: #c5a059;
-    --cyan: #00ffcc;
-    --text: #d1d1d1;
-    --dim: #555;
+    --gold-glow: rgba(197, 160, 89, 0.3);
+    --qi-cyan: #00ffcc;
+    --karma-red: #ff4d4d;
+    --bg-black: #050505;
+    --border: rgba(255, 255, 255, 0.05);
 }
+
+* { box-sizing: border-box; transition: all 0.3s ease; }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Georgia', serif;
+    background-color: #000;
+    color: #eee;
+    font-family: 'Inter', sans-serif;
     margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
     height: 100vh;
-    box-sizing: border-box;
     overflow: hidden;
 }
 
+#game-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 1fr 120px;
+    height: 100vh;
+}
+
+/* Sidebar */
 #status-panel {
-    background: var(--panel);
-    padding: 15px;
-    border: 1px solid var(--border);
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-    border-radius: 2px;
-}
-
-.stat { color: var(--gold); font-weight: bold; text-transform: uppercase; }
-
-#log-container {
-    flex-grow: 1;
-    background: #000;
-    border: 1px solid var(--border);
-    overflow: hidden;
+    grid-row: 1 / span 2;
+    background: var(--bg-black);
+    padding: 40px;
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
 }
 
-#log {
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+.brand-header { margin-bottom: 50px; }
+.studio-name { font-size: 0.6rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; display: block; }
+.game-title { font-family: 'Cinzel', serif; margin: 0; font-size: 1.4rem; }
 
-.log-entry {
-    line-height: 1.6;
-    padding-left: 12px;
-    border-left: 1px solid var(--border);
-    animation: fadeIn 0.4s ease;
-}
+.stat-group { margin-bottom: 35px; }
+.stat-group label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: #555; }
+.value { font-family: 'Cinzel', serif; font-size: 1.2rem; margin-top: 5px; }
+.gold-text { color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.bar-bg { width: 100%; height: 2px; background: #111; margin-top: 10px; }
+.bar-fill { height: 100%; background: var(--qi-cyan); width: 0%; box-shadow: 0 0 10px var(--qi-cyan); }
+.bar-fill.age { background: #333; box-shadow: none; }
 
-#controls {
-    padding: 20px 0;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-button {
-    background: #111;
-    color: #fff;
-    border: 1px solid var(--border);
-    padding: 12px 20px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: 0.2s;
-}
-
-button:hover { border-color: var(--gold); background: #1a1a1a; }
-
-#karma-portal {
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    padding: 15px;
-    margin-top: 10px;
-}
-
-.portal-header {
-    font-size: 0.7rem;
-    color: var(--dim);
-    text-align: center;
+.menu-trigger-btn {
+    background: transparent;
+    border: 1px solid #222;
+    color: #555;
+    padding: 10px;
+    font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin-bottom: 10px;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
-.portal-buttons { display: flex; justify-content: center; gap: 10px; }
+.menu-trigger-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-.util-btn { font-size: 0.65rem; padding: 5px 10px; opacity: 0.7; }
-.util-btn.reset:hover { border-color: #700; color: #f44; }
+/* Chronicle */
+#log-container {
+    padding: 60px;
+    overflow-y: auto;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
-.event-msg { color: var(--cyan); }
-.breakthrough-msg { color: var(--gold); font-weight: bold; }
-.system-msg { color: var(--dim); font-style: italic; }
+.log-entry { font-size: 1rem; color: #888; line-height: 1.6; max-width: 750px; animation: slideIn 0.4s ease-out; }
+.log-entry.system { color: var(--gold); font-weight: bold; }
+
+@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Actions */
+#action-bar {
+    background: var(--bg-black);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 60px;
+    gap: 20px;
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.action-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.breakthrough { border-color: var(--gold); color: var(--gold); font-weight: 900; }
+.breakthrough:hover:not(:disabled) { background: var(--gold); color: #000; }
+
+/* Side Menu */
+#side-menu {
+    position: fixed;
+    top: 0; right: -400px;
+    width: 400px; height: 100vh;
+    background: #080808;
+    border-left: 1px solid var(--gold);
+    z-index: 1000;
+    padding: 60px 40px;
+}
+
+#menu-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+.menu-title { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.8rem; margin: 0; }
+.menu-sub { font-size: 0.6rem; letter-spacing: 3px; color: #444; text-transform: uppercase; margin-bottom: 40px; }
+.stat-list { list-style: none; padding: 0; color: #888; font-size: 0.9rem; }
+.stat-list li { margin-bottom: 12px; border-bottom: 1px solid #111; padding-bottom: 5px; }
+
+.footer-links { margin-top: auto; }
+.util-btn { background: none; border: none; color: #333; font-size: 0.6rem; cursor: pointer; text-transform: uppercase; padding: 0; text-align: left; }
+.back-link { display: block; margin-top: 10px; color: #333; text-decoration: none; font-size: 0.6rem; text-transform: uppercase; }

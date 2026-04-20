@@ -1,128 +1,146 @@
-const realms = [
-    { name: "Mortal", req: 20, chance: 1.0 },
-    { name: "Qi Condensation", req: 100, chance: 0.7 },
-    { name: "Foundation Establishment", req: 500, chance: 0.5 }
-];
-
-const spiritRoots = [
-    { name: "Mortal Root", multi: 1.0, color: "#aaa" },
-    { name: "Earth Root", multi: 2.0, color: "#8b4513" },
-    { name: "Heavenly Root", multi: 5.0, color: "#ffd700" },
-    { name: "Primordial Root", multi: 12.0, color: "#00ffcc" }
-];
-
-let player = {
-    root: null,
-    realmIndex: 0,
+// --- GAME STATE ---
+let gameState = {
     qi: 0,
-    isAwake: false
+    maxQi: 100,
+    realm: "Mortal Coil",
+    realmIndex: 0,
+    age: 16,
+    maxAge: 80,
+    combatPower: 10,
+    isDead: false
 };
 
-const SAVE_KEY = "soul_awakening_v1";
+const realms = [
+    { name: "Mortal Coil", ageLimit: 80, success: 0.7 },
+    { name: "Qi Condensation", ageLimit: 150, success: 0.5 },
+    { name: "Foundation Establishment", ageLimit: 320, success: 0.35 },
+    { name: "Core Formation", ageLimit: 800, success: 0.2 },
+    { name: "Nascent Soul", ageLimit: 3000, success: 0.1 }
+];
 
-function writeLog(text, className = "") {
-    const log = document.getElementById('log');
-    if (!log) return;
-    const entry = document.createElement('div');
-    entry.className = `log-entry ${className}`;
-    entry.innerHTML = text;
-    log.appendChild(entry);
-    log.scrollTop = log.scrollHeight;
-}
-
-function updateUI() {
-    if (player.root) {
-        document.getElementById('p-root').innerText = player.root.name;
-        document.getElementById('p-root').style.color = player.root.color;
-    }
-    document.getElementById('p-realm').innerText = realms[player.realmIndex].name;
-    document.getElementById('p-qi').innerText = Math.floor(player.qi);
-
-    document.getElementById('btn-awaken').style.display = player.isAwake ? "none" : "inline-block";
-    document.getElementById('btn-cultivate').style.display = player.isAwake ? "inline-block" : "none";
-    document.getElementById('btn-explore').style.display = player.isAwake ? "inline-block" : "none";
+// --- MENU FUNCTIONS ---
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
     
-    const current = realms[player.realmIndex];
-    const canBreak = player.qi >= current.req && player.realmIndex < realms.length - 1;
-    document.getElementById('btn-breakthrough').style.display = canBreak ? "inline-block" : "none";
+    if (menu.style.right === "0px") {
+        menu.style.right = "-400px";
+        overlay.style.display = "none";
+    } else {
+        menu.style.right = "0px";
+        overlay.style.display = "block";
+        updateMenuContent();
+    }
 }
 
-function awaken() {
-    const roll = Math.random();
-    if (roll > 0.98) player.root = spiritRoots[3];
-    else if (roll > 0.85) player.root = spiritRoots[2];
-    else if (roll > 0.50) player.root = spiritRoots[1];
-    else player.root = spiritRoots[0];
-
-    player.isAwake = true;
-    writeLog(`Soul Anchor successful. You possess the <span style="color:${player.root.color}">${player.root.name}</span>.`, "breakthrough-msg");
-    saveGame();
-    updateUI();
+function updateMenuContent() {
+    const statsList = document.getElementById('extra-stats');
+    const chance = (realms[gameState.realmIndex].success * 100).toFixed(0);
+    statsList.innerHTML = `
+        <li>Combat Intent: ${gameState.combatPower}</li>
+        <li>Current Age: ${gameState.age} Years</li>
+        <li>Lifespan Limit: ${gameState.maxAge} Years</li>
+        <li>Breakthrough Chance: ${chance}%</li>
+        <li>Qi Velocity: +${10 + (gameState.realmIndex * 5)}/yr</li>
+    `;
 }
 
-function cultivate() {
-    const gain = 2 * (player.root ? player.root.multi : 1);
-    player.qi += gain;
-    writeLog(`Qi +${gain}`, "system-msg");
-    saveGame();
+// --- GAME ACTIONS ---
+function meditate() {
+    if (isGameOver()) return;
+    let gain = 10 + (gameState.realmIndex * 5);
+    gameState.qi = Math.min(gameState.maxQi, gameState.qi + gain);
+    gameState.age += 1;
+    writeToLog(`You spend a year in secluded meditation. (+${gain} Qi)`);
     updateUI();
 }
 
 function explore() {
-    player.qi += 10;
-    writeLog("You wander the local spirit woods. (+10 Qi)", "event-msg");
-    saveGame();
+    if (isGameOver()) return;
+    gameState.age += 2;
+    let roll = Math.random();
+    if (roll > 0.8) {
+        triggerCombat();
+    } else if (roll > 0.4) {
+        let boost = Math.floor(Math.random() * 20) + 10;
+        gameState.maxQi += boost;
+        writeToLog(`You find a relic of a past era. Your potential expands. (+${boost} Max Qi)`);
+    } else {
+        writeToLog("You wander the world's edge. Time slips through your fingers like sand.");
+    }
     updateUI();
 }
 
 function breakthrough() {
-    const current = realms[player.realmIndex];
-    if (Math.random() <= current.chance) {
-        player.realmIndex++;
-        player.qi = 0;
-        writeLog("Ascension Success!", "breakthrough-msg");
-    } else {
-        player.qi = Math.floor(player.qi * 0.5);
-        writeLog("Ascension Failed.", "system-msg");
+    if (isGameOver()) return;
+    if (gameState.qi < gameState.maxQi) {
+        writeToLog("Your foundation is insufficient for a breakthrough.", "system");
+        return;
     }
-    saveGame();
+
+    let chance = realms[gameState.realmIndex].success;
+    if (Math.random() < chance) {
+        gameState.realmIndex++;
+        let next = realms[gameState.realmIndex];
+        gameState.realm = next.name;
+        gameState.maxAge = next.ageLimit;
+        gameState.combatPower *= 2.5;
+        gameState.qi = 0;
+        gameState.maxQi *= 1.8;
+        writeToLog(`SUCCESS! You have ascended to ${gameState.realm}. Your life is extended.`, "system");
+    } else {
+        gameState.qi = Math.floor(gameState.qi * 0.5);
+        writeToLog("The breakthrough fails. Your meridians suffer heavy damage.", "system");
+    }
     updateUI();
 }
 
-function saveGame() { localStorage.setItem(SAVE_KEY, JSON.stringify(player)); }
-
-function loadGame() {
-    const saved = localStorage.getItem(SAVE_KEY);
-    if (saved) {
-        const data = JSON.parse(saved);
-        if (data && data.isAwake) {
-            player = data;
-            writeLog("Soul re-synchronized.", "system-msg");
-        }
+// --- CORE SYSTEMS ---
+function triggerCombat() {
+    let enemyStr = (gameState.realmIndex + 1) * 20;
+    let roll = Math.floor(Math.random() * enemyStr);
+    writeToLog(`A rival disciple challenges you! (Rival Power: ${roll})`, "system");
+    if (gameState.combatPower >= roll) {
+        gameState.combatPower += 5;
+        writeToLog("You claim victory. Your combat intent sharpens.");
+    } else {
+        die("Slain in battle. Your soul dissipates into the wind.");
     }
 }
 
-function resetGame() {
-    if (confirm("Reset Karma?")) {
-        localStorage.removeItem(SAVE_KEY);
-        location.reload();
+function isGameOver() {
+    if (gameState.isDead) return true;
+    if (gameState.age >= gameState.maxAge) {
+        die("Your lifespan has reached its natural end.");
+        return true;
     }
+    return false;
 }
 
-function exportKarma() {
-    const hash = btoa(JSON.stringify(player));
-    alert("Copy this Hash: " + hash);
+function die(reason) {
+    gameState.isDead = true;
+    writeToLog(`DEATH: ${reason}`, "system");
+    document.getElementById('realm-display').innerText = "Deceased";
+    document.getElementById('realm-display').style.color = "var(--karma-red)";
+    // Disable buttons
+    document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
 }
 
-function importKarma() {
-    const hash = prompt("Paste Hash:");
-    if (hash) {
-        player = JSON.parse(atob(hash));
-        saveGame();
-        updateUI();
-    }
+function updateUI() {
+    document.getElementById('realm-display').innerText = gameState.realm;
+    document.getElementById('qi-count').innerText = `${Math.floor(gameState.qi)} / ${Math.floor(gameState.maxQi)}`;
+    document.getElementById('age-count').innerText = `${gameState.age} / ${gameState.maxAge} Years`;
+    document.getElementById('qi-fill').style.width = `${(gameState.qi / gameState.maxQi) * 100}%`;
+    document.getElementById('age-fill').style.width = `${(gameState.age / gameState.maxAge) * 100}%`;
 }
 
-// Initial Boot
-loadGame();
+function writeToLog(text, type = "") {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.innerText = `[Age ${gameState.age}] ${text}`;
+    const log = document.getElementById('log-container');
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+}
+
 updateUI();
