@@ -9,7 +9,32 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
-    <div id="menu-overlay" onclick="toggleMenu()"></div>
+    <div id="menu-overlay" onclick="closeAllModals()"></div>
+
+    <div id="help-modal" class="modal">
+        <div class="modal-inner">
+            <h3 class="gold-text"><i class="ph ph-scroll"></i> Path to Immortality</h3>
+            <div class="help-grid">
+                <div class="help-item">
+                    <strong><i class="ph ph-hourglass-high"></i> The Great Cycle</strong>
+                    <p>Every 5 minutes of real time is 1 year of life. You must ascend realms to extend your lifespan.</p>
+                </div>
+                <div class="help-item">
+                    <strong><i class="ph ph-wind"></i> Cultivation</strong>
+                    <p>Refining Qi fills your dantian. Once full, you may attempt to break through to the next realm.</p>
+                </div>
+                <div class="help-item">
+                    <strong><i class="ph ph-lightning"></i> Ascension Risk</strong>
+                    <p>Breakthroughs are dangerous. Success increases power; failure drains Qi and can damage your foundation.</p>
+                </div>
+                <div class="help-item">
+                    <strong><i class="ph ph-sword"></i> Fortune & Danger</strong>
+                    <p>Explore to find Spirit Stones or encounter rivals. Your Combat Power determines survival in duels.</p>
+                </div>
+            </div>
+            <button class="action-btn" onclick="toggleHelp()" style="margin-top: 25px; width: 100%;">Return to Path</button>
+        </div>
+    </div>
 
     <aside id="side-menu">
         <div class="menu-inner">
@@ -33,14 +58,14 @@
             </div>
 
             <div class="stat-card">
-                <label><i class="ph ph-scroll"></i> Cultivation Realm</label>
+                <label><i class="ph ph-scroll"></i> Current Realm</label>
                 <div id="realm-display" class="value gold-text">Awaiting Birth</div>
             </div>
 
             <div class="gauges">
                 <div class="stat-card">
                     <div class="label-row">
-                        <label><i class="ph ph-wind"></i> Qi Concentration</label>
+                        <label><i class="ph ph-wind"></i> Yuan Qi</label>
                         <span id="qi-count" class="count-text">0 / 100</span>
                     </div>
                     <div class="bar-bg"><div id="qi-fill" class="bar-fill"></div></div>
@@ -48,21 +73,30 @@
 
                 <div class="stat-card">
                     <div class="label-row">
-                        <label><i class="ph ph-hourglass-high"></i> Mortal Lifespan</label>
-                        <span id="age-count" class="count-text">0 / 0 Years</span>
+                        <label><i class="ph ph-hourglass-high"></i> Lifespan</label>
+                        <span id="age-count" class="count-text">0 / 0</span>
                     </div>
                     <div class="bar-bg"><div id="age-fill" class="bar-fill age"></div></div>
                     <div id="time-countdown" class="timer-display">Cycle Ends: 5:00</div>
                 </div>
             </div>
 
-            <button class="menu-trigger-btn" onclick="toggleMenu()">
-                <i class="ph ph-fingerprint"></i> Examine Dao Heart
-            </button>
+            <div class="utility-grid">
+                <button class="util-box" onclick="toggleMenu()">
+                    <i class="ph ph-fingerprint"></i>
+                    <span>Stats</span>
+                </button>
+                <button class="util-box" onclick="toggleHelp()">
+                    <i class="ph ph-info"></i>
+                    <span>Help</span>
+                </button>
+            </div>
 
             <div class="footer-links">
-                <button class="util-btn" onclick="location.reload()"><i class="ph ph-arrows-counter-clockwise"></i> Reincarnate</button>
-                <a href="https://thana-studios.github.io/" class="back-link">Return to Studio</a>
+                <button class="rebirth-btn" onclick="location.reload()">
+                    <i class="ph ph-arrows-counter-clockwise"></i> Reincarnate
+                </button>
+                <a href="https://thana-studios.github.io/" class="back-link">Back to Hub</a>
             </div>
         </aside>
 
@@ -71,10 +105,10 @@
 
         <nav id="action-bar" style="display: none;">
             <button class="action-btn" onclick="meditate()">
-                <i class="ph ph-スピリチュアル"></i> Cultivate
+                <i class="ph ph-leaf"></i> Cultivate
             </button>
             <button class="action-btn" onclick="explore()">
-                <i class="ph ph-map-trifold"></i> Seek Fortune
+                <i class="ph ph-map-trifold"></i> Explore
             </button>
             <button class="action-btn breakthrough" onclick="breakthrough()">
                 <i class="ph ph-lightning"></i> Ascend
