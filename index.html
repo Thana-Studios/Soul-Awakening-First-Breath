@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soul Awakening | First Breath</title>
+    <title>Soul Awakening | Heaven's RNG</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <aside id="side-menu">
         <div class="menu-inner">
-            <h3 class="menu-title">The Inner Eye</h3>
-            <p class="menu-sub">Soul Statistics</p>
+            <header class="menu-header">
+                <i class="ph ph-eye-closed gold-text"></i>
+                <h3 class="menu-title">Inner Eye</h3>
+            </header>
+            <p class="menu-sub">Soul Statistics & Lineage</p>
             <ul id="extra-stats" class="stat-list"></ul>
-            <button class="util-btn" onclick="toggleMenu()" style="margin-top: 40px;">Close Archive</button>
+            <button class="close-btn" onclick="toggleMenu()">
+                <i class="ph ph-x"></i> Close Archive
+            </button>
         </div>
     </aside>
 
@@ -26,46 +32,53 @@
                 <h2 class="game-title">Soul Awakening</h2>
             </div>
 
-            <div class="stat-group">
-                <label>Current Realm</label>
-                <div id="realm-display" class="value gold-text">Mortal Coil</div>
+            <div class="stat-card">
+                <label><i class="ph ph-scroll"></i> Cultivation Realm</label>
+                <div id="realm-display" class="value gold-text">Awaiting Birth</div>
             </div>
 
             <div class="gauges">
-                <div class="stat-group">
+                <div class="stat-card">
                     <div class="label-row">
-                        <label>Qi Concentration</label>
-                        <span id="qi-count">0 / 100</span>
+                        <label><i class="ph ph-wind"></i> Qi Concentration</label>
+                        <span id="qi-count" class="count-text">0 / 100</span>
                     </div>
                     <div class="bar-bg"><div id="qi-fill" class="bar-fill"></div></div>
                 </div>
 
-                <div class="stat-group">
+                <div class="stat-card">
                     <div class="label-row">
-                        <label>Natural Lifespan</label>
-                        <span id="age-count">16 / 80 Years</span>
+                        <label><i class="ph ph-hourglass-high"></i> Mortal Lifespan</label>
+                        <span id="age-count" class="count-text">0 / 0 Years</span>
                     </div>
                     <div class="bar-bg"><div id="age-fill" class="bar-fill age"></div></div>
-                    <div id="time-countdown" class="timer-display">Next Year In: 5:00</div>
+                    <div id="time-countdown" class="timer-display">Cycle Ends: 5:00</div>
                 </div>
             </div>
 
-            <button class="menu-trigger-btn" onclick="toggleMenu()">Expand Inner Eye</button>
+            <button class="menu-trigger-btn" onclick="toggleMenu()">
+                <i class="ph ph-fingerprint"></i> Examine Dao Heart
+            </button>
 
             <div class="footer-links">
-                <button class="util-btn" onclick="location.reload()">Reincarnate</button>
+                <button class="util-btn" onclick="location.reload()"><i class="ph ph-arrows-counter-clockwise"></i> Reincarnate</button>
                 <a href="https://thana-studios.github.io/" class="back-link">Return to Studio</a>
             </div>
         </aside>
 
         <main id="log-container">
-            <div class="log-entry system">The clock of the heavens has begun to tick. Cultivate before your time expires.</div>
-        </main>
+            </main>
 
-        <nav id="action-bar">
-            <button class="action-btn" onclick="meditate()">Meditate</button>
-            <button class="action-btn" onclick="explore()">Explore</button>
-            <button class="action-btn breakthrough" onclick="breakthrough()">Attempt Breakthrough</button>
+        <nav id="action-bar" style="display: none;">
+            <button class="action-btn" onclick="meditate()">
+                <i class="ph ph-スピリチュアル"></i> Cultivate
+            </button>
+            <button class="action-btn" onclick="explore()">
+                <i class="ph ph-map-trifold"></i> Seek Fortune
+            </button>
+            <button class="action-btn breakthrough" onclick="breakthrough()">
+                <i class="ph ph-lightning"></i> Ascend
+            </button>
         </nav>
     </div>
 
