@@ -60,6 +60,8 @@
             <div class="stat-card">
                 <label><i class="ph ph-scroll"></i> Current Realm</label>
                 <div id="realm-display" class="value gold-text">Awaiting Birth</div>
+                <!-- Poetic realm title from lore.js -->
+                <div id="realm-subtitle" class="realm-subtitle"></div>
             </div>
 
             <div class="gauges">
@@ -101,7 +103,7 @@
         </aside>
 
         <main id="log-container">
-            </main>
+        </main>
 
         <nav id="action-bar" style="display: none;">
             <button class="action-btn" onclick="meditate()">
@@ -116,6 +118,8 @@
         </nav>
     </div>
 
+    <!-- Lore system must load before script.js -->
+    <script src="lore.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@ let gameState = {
     started: false,
     qi: 0,
     maxQi: 100,
-    realm: "Mortal Coil",
+    realm: "Mortal Shell",
     realmIndex: 0,
     age: 0,
     maxAge: 70,
@@ -13,13 +13,19 @@ let gameState = {
     isDead: false
 };
 
-const realms = [
-    { name: "Tempering Body", ageLimit: 75, success: 0.8 },
-    { name: "Initial Element", ageLimit: 120, success: 0.6 },
-    { name: "Gas Transforming", ageLimit: 200, success: 0.45 },
-    { name: "Separation and Reunion", ageLimit: 400, success: 0.3 },
-    { name: "True Element", ageLimit: 800, success: 0.2 },
-    { name: "Immortal Ascension", ageLimit: 2000, success: 0.1 }
+// ── Realms now come from lore.js (REALMS array).
+// We keep a lightweight local table only for the
+// mechanical values (ageLimit, success chance).
+const realmMechanics = [
+    { ageLimit: 75,   success: 0.8 },  // 0 Mortal Shell
+    { ageLimit: 120,  success: 0.6 },  // 1 Qi Awakening
+    { ageLimit: 200,  success: 0.45 }, // 2 Foundation Forging
+    { ageLimit: 400,  success: 0.3 },  // 3 Core Condensation
+    { ageLimit: 800,  success: 0.2 },  // 4 Soul Refinement
+    { ageLimit: 2000, success: 0.1 },  // 5 Nascent Divinity
+    { ageLimit: 5000, success: 0.07 }, // 6 Void Transcendence
+    { ageLimit: 15000,success: 0.04 }, // 7 Celestial Sovereign
+    { ageLimit: 99999,success: 0.02 }, // 8 Eternal Dao (final)
 ];
 
 const YEAR_DURATION = 5 * 60 * 1000;
@@ -29,12 +35,16 @@ window.onload = () => {
     startBirthSequence();
 };
 
+// ─────────────────────────────────────────────
+//  BIRTH SEQUENCE
+// ─────────────────────────────────────────────
 async function startBirthSequence() {
     const log = document.getElementById('log-container');
     log.innerHTML = "";
     writeToLog("The wheel of reincarnation spins...", "system");
-    await new Promise(r => setTimeout(r, 1500));
+    await delay(1500);
 
+    // ── Lineage roll ──
     const lineageRoll = Math.random();
     if (lineageRoll > 0.9) {
         gameState.lineage = "Imperial Clan";
@@ -58,8 +68,9 @@ async function startBirthSequence() {
         writeToLog("Left in a basket at a monk's door. Your lineage is silent.");
     }
 
-    await new Promise(r => setTimeout(r, 2000));
+    await delay(2000);
 
+    // ── Spirit Root roll ──
     const rootRoll = Math.random();
     if (rootRoll > 0.95) {
         gameState.spiritRoot = "Heavenly Saint Root";
@@ -74,19 +85,27 @@ async function startBirthSequence() {
         writeToLog("Your talent is ordinary, but your resolve remains unbroken.");
     }
 
-    await new Promise(r => setTimeout(r, 2000));
+    await delay(2000);
     beginAscension();
 }
 
 function beginAscension() {
     gameState.started = true;
     gameState.age = 14;
+    // Set starting realm from lore
+    const startRealm = loreGetRealm(1); // index 1 = Mortal Shell
+    gameState.realm = startRealm.name;
+    gameState.realmIndex = 0;
+
     document.getElementById('action-bar').style.display = 'flex';
     writeToLog("Fourteen years pass in a breath. Your journey begins.", "system");
     updateUI();
     startWorldClock();
 }
 
+// ─────────────────────────────────────────────
+//  WORLD CLOCK
+// ─────────────────────────────────────────────
 function startWorldClock() {
     setInterval(() => {
         if (gameState.isDead) return;
@@ -94,7 +113,9 @@ function startWorldClock() {
         if (timeToNextYear <= 0) {
             gameState.age++;
             timeToNextYear = YEAR_DURATION;
-            if (gameState.age >= gameState.maxAge) die("Time has claimed your mortal shell.");
+            if (gameState.age >= gameState.maxAge) {
+                die(loreDeath());
+            }
             updateUI();
         }
         updateTimerDisplay();
@@ -104,108 +125,193 @@ function startWorldClock() {
 function updateTimerDisplay() {
     const mins = Math.floor(timeToNextYear / 60000);
     const secs = Math.floor((timeToNextYear % 60000) / 1000);
-    document.getElementById('time-countdown').innerText = `Cycle Ends: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    document.getElementById('time-countdown').innerText =
+        `Cycle Ends: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
+// ─────────────────────────────────────────────
+//  ACTIONS
+// ─────────────────────────────────────────────
 function meditate() {
     if (gameState.isDead) return;
+
     let gain = 10 + (gameState.realmIndex * 5);
     if (gameState.spiritRoot === "Heavenly Saint Root") gain += 15;
     gameState.qi = Math.min(gameState.maxQi, gameState.qi + gain);
-    writeToLog(`You refine Yuan Qi within your dantian. (+${gain} Qi)`);
+
+    // Lore flavour line + Qi gain notice
+    writeToLog(loreCultivate());
+    writeToLog(`(+${gain} Qi)`, "system-minor");
+
     updateUI();
 }
 
 function explore() {
     if (gameState.isDead) return;
-    let roll = Math.random();
-    if (roll > 0.85) triggerCombat();
-    else if (roll > 0.5) {
-        let treasure = Math.floor(Math.random() * 20) + 5;
+
+    const roll = Math.random();
+
+    if (roll > 0.85) {
+        // Combat encounter — lore handles the description, mechanics stay here
+        triggerCombat();
+    } else if (roll > 0.5) {
+        // Spirit Stone find — use lore event pool filtered to "good"
+        const event = loreExplore();
+        const treasure = Math.floor(Math.random() * 20) + 5;
         gameState.gold += treasure;
-        writeToLog(`You found a fragment of a Spirit Stone. (+${treasure} Gold)`);
-    } else writeToLog("You wander the sect mountains, observing the Great Dao.");
+
+        // Pick a good-tagged event for flavour, append the mechanical result
+        const goodEvents = EXPLORE_EVENTS.filter(e => e.tag === "good");
+        const flavour = loreRandom(goodEvents).msg;
+        writeToLog(flavour, "good");
+        writeToLog(`(+${treasure} Gold)`, "system-minor");
+    } else {
+        // Neutral / atmospheric event
+        const event = loreExplore();
+        // Bias toward neutral/bad for flavour variety
+        const quietEvents = EXPLORE_EVENTS.filter(e => e.tag === "neutral" || e.tag === "bad");
+        writeToLog(loreRandom(quietEvents).msg);
+    }
+
     updateUI();
 }
 
 function breakthrough() {
     if (gameState.isDead) return;
+
     if (gameState.qi < gameState.maxQi) {
         writeToLog("Your foundation is insufficient for ascension.", "system");
         return;
     }
-    let chance = realms[gameState.realmIndex].success;
+
+    // Attempt flavour before the roll resolves
+    writeToLog(loreAscendAttempt(), "system");
+
+    const nextMechanicsIndex = Math.min(gameState.realmIndex, realmMechanics.length - 1);
+    const chance = realmMechanics[nextMechanicsIndex].success;
+
     if (Math.random() < chance) {
         gameState.realmIndex++;
-        gameState.realm = realms[gameState.realmIndex].name;
-        gameState.maxAge = realms[gameState.realmIndex].ageLimit;
+        // Pull name from lore — loreGetRealm uses 1-based display index
+        // realmIndex 0 = Mortal Shell (lore index 1), so offset by 1
+        const loreIndex = Math.min(gameState.realmIndex + 1, REALMS.length - 1);
+        const newRealm = loreGetRealm(loreIndex);
+
+        gameState.realm = newRealm.name;
+        gameState.maxAge = realmMechanics[Math.min(gameState.realmIndex, realmMechanics.length - 1)].ageLimit;
         gameState.combatPower *= 2.2;
         gameState.qi = 0;
         gameState.maxQi *= 1.5;
-        writeToLog(`Ascension Success! You reached the ${gameState.realm} stage.`, "system");
+
+        writeToLog(loreBreakthroughSuccess(newRealm.name), "system");
     } else {
         gameState.qi = Math.floor(gameState.qi * 0.4);
-        writeToLog("Breakthrough Failed! The energy backlash burns your meridians.", "system");
+        writeToLog(loreBreakthroughFailure(), "bad");
     }
+
     updateUI();
 }
 
 function triggerCombat() {
-    let enemyStr = (gameState.realmIndex + 1) * 22;
-    let roll = Math.floor(Math.random() * enemyStr);
-    writeToLog("A rival cultivator challenges your luck!", "system");
+    const enemyStr = (gameState.realmIndex + 1) * 22;
+    const roll = Math.floor(Math.random() * enemyStr);
+
+    // Get a combat-tagged event for the encounter description
+    const combatEvents = EXPLORE_EVENTS.filter(e => e.tag === "combat");
+    writeToLog(loreRandom(combatEvents).msg, "system");
+
     if (gameState.combatPower >= roll) {
         gameState.combatPower += 6;
-        writeToLog("Victory! Your battle intent sharpens.");
-    } else die("Slain in a duel. Your path ends in blood.");
+        writeToLog("Victory. Your battle intent sharpens. (+6 Combat Power)", "good");
+    } else {
+        die("Slain in a duel. Your path ends in blood.");
+    }
 }
 
+// ─────────────────────────────────────────────
+//  DEATH
+// ─────────────────────────────────────────────
 function die(reason) {
     gameState.isDead = true;
-    writeToLog(`DEATH: ${reason}`, "system");
+    writeToLog(reason, "death");
     document.getElementById('realm-display').innerText = "Deceased";
+    document.getElementById('realm-subtitle').innerText = "";
     document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
     updateUI();
 }
 
+// ─────────────────────────────────────────────
+//  UI
+// ─────────────────────────────────────────────
 function updateUI() {
-    if (!gameState.isDead) document.getElementById('realm-display').innerText = gameState.realm;
-    document.getElementById('qi-count').innerText = `${Math.floor(gameState.qi)} / ${Math.floor(gameState.maxQi)}`;
-    document.getElementById('age-count').innerText = `${gameState.age} / ${gameState.maxAge}`;
-    document.getElementById('qi-fill').style.width = `${(gameState.qi / gameState.maxQi) * 100}%`;
-    
+    if (!gameState.isDead) {
+        document.getElementById('realm-display').innerText = gameState.realm;
+
+        // Update the poetic subtitle from lore
+        const loreIndex = Math.min(gameState.realmIndex + 1, REALMS.length - 1);
+        const realmData = loreGetRealm(loreIndex);
+        const subtitle = document.getElementById('realm-subtitle');
+        if (subtitle) {
+            subtitle.innerText = realmData.title;
+            subtitle.style.color = realmData.color;
+        }
+    }
+
+    document.getElementById('qi-count').innerText =
+        `${Math.floor(gameState.qi)} / ${Math.floor(gameState.maxQi)}`;
+    document.getElementById('age-count').innerText =
+        `${gameState.age} / ${gameState.maxAge}`;
+    document.getElementById('qi-fill').style.width =
+        `${(gameState.qi / gameState.maxQi) * 100}%`;
+
     const agePercent = (gameState.age / gameState.maxAge) * 100;
     const ageFill = document.getElementById('age-fill');
     ageFill.style.width = `${agePercent}%`;
-    if (gameState.maxAge - gameState.age <= 5) ageFill.style.background = "var(--karma-red)";
+    if (gameState.maxAge - gameState.age <= 5) {
+        ageFill.style.background = "var(--karma-red)";
+    }
 }
 
 function writeToLog(text, type = "") {
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
+
     let icon = "";
-    if (type === "system") icon = '<i class="ph ph-sparkle"></i> ';
-    if (text.includes("Victory")) icon = '<i class="ph ph-sword gold-text"></i> ';
-    if (text.includes("DEATH")) icon = '<i class="ph ph-skull text-red"></i> ';
-    entry.innerHTML = `<span class="age-tag">Year ${gameState.age}</span> ${icon}${text}`;
+    if (type === "system")       icon = '<i class="ph ph-sparkle"></i> ';
+    if (type === "good")         icon = '<i class="ph ph-sword gold-text"></i> ';
+    if (type === "bad")          icon = '<i class="ph ph-warning"></i> ';
+    if (type === "death")        icon = '<i class="ph ph-skull"></i> ';
+    if (type === "system-minor") icon = '';
+
+    entry.innerHTML =
+        `<span class="age-tag">Year ${gameState.age}</span> ${icon}${text}`;
+
     const log = document.getElementById('log-container');
     log.appendChild(entry);
     log.scrollTop = log.scrollHeight;
 }
 
+// ─────────────────────────────────────────────
+//  MENUS
+// ─────────────────────────────────────────────
 function toggleMenu() {
     const menu = document.getElementById('side-menu');
     const overlay = document.getElementById('menu-overlay');
     const open = menu.style.right === "0px";
     menu.style.right = open ? "-450px" : "0px";
     overlay.style.display = open ? "none" : "block";
+
     if (!open) {
+        // Render stat list
         document.getElementById('extra-stats').innerHTML = `
             <li><i class="ph ph-dna"></i> <span>Origin:</span> ${gameState.lineage}</li>
             <li><i class="ph ph-leaf"></i> <span>Spirit Root:</span> ${gameState.spiritRoot}</li>
             <li><i class="ph ph-coins"></i> <span>Gold:</span> ${gameState.gold}</li>
             <li><i class="ph ph-shield"></i> <span>Combat:</span> ${Math.floor(gameState.combatPower)}</li>
         `;
+        // Inject realm lore block above the stats
+        const loreIndex = Math.min(gameState.realmIndex + 1, REALMS.length - 1);
+        loreRenderInnerEye(loreIndex);
     }
 }
 
@@ -221,4 +327,11 @@ function closeAllModals() {
     document.getElementById('help-modal').style.display = 'none';
     document.getElementById('side-menu').style.right = '-450px';
     document.getElementById('menu-overlay').style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+//  UTILITY
+// ─────────────────────────────────────────────
+function delay(ms) {
+    return new Promise(r => setTimeout(r, ms));
 }
